@@ -15,7 +15,7 @@ protocol MainViewProtocol: AnyObject {
 class MainViewController: UIViewController {
     // MARK: - Public
     var presenter: MainPresenterProtocol?
-    
+    private lazy var loader = DefaultLoader()
     private lazy var serviceTable: UITableView = {
         let tableView = UITableView()
         tableView.register(ServiceCell.self, forCellReuseIdentifier: ServiceCell.identifier)
@@ -31,7 +31,12 @@ class MainViewController: UIViewController {
         title = "Сервисы"
         view.backgroundColor = .background
         view.addView(serviceTable)
+        view.addView(loader)
         serviceTable.pin.top(view.pin.safeArea).left().right().bottom()
+        loader.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        loader.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        loader.widthAnchor.constraint(equalToConstant: 10).isActive = true
+        loader.heightAnchor.constraint(equalToConstant: 10).isActive = true
         presenter?.fetchServices()
     }
     
@@ -84,6 +89,7 @@ extension MainViewController: MainViewProtocol {
     func displayFetchedServices() {
         DispatchQueue.main.async {
             self.serviceTable.reloadData()
+            self.loader.removeFromSuperview()
         }
     }
     
